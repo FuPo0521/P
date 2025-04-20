@@ -133,11 +133,10 @@
     }
 
     function steal() {
-      stealNum++;
-      stealDen++;
-      handCount++;
+      stealNum++;  // 分子加 1
+      // 不增加 stealDen，即分母不變
       updateSteal();
-      updateHand();
+      updateHand();  // 不增加手數
     }
 
     function saveAndReset() {
