@@ -33,15 +33,17 @@
   <h1>不要癢</h1>
 
   <div>
-    <button id="foldBtn" onclick="fold()">棄牌</button>
-    <button id="callBtn" onclick="call()">入池</button>
-    <button id="bet3Btn" onclick="bet3()">3bet</button>
+    <button onclick="fold()">棄牌</button>
+    <button onclick="call()">入池</button>
+    <button onclick="bet3()">3bet</button>
+    <button onclick="steal()">收池</button> <!-- 新增收池按鈕 -->
     <button onclick="saveAndReset()">儲存</button>
     <button onclick="deleteAll()">刪除</button>
   </div>
 
-  <div class="result" id="vpip">VVIP="0.0%"</div>
+  <div class="result" id="vpip">VPIP="0.0%"</div>
   <div class="result" id="threeBet">3bet="0.0%"</div>
+  <div class="result" id="stealRate">收池率="0.0%"</div> <!-- 新增收池率 -->
   <div class="result" id="handCountDisplay">第 0 手</div>
 
   <h3>儲存紀錄</h3>
@@ -49,8 +51,9 @@
     <thead>
       <tr>
         <th>手數</th>
-        <th>VVIP%</th>
+        <th>VPIP%</th>
         <th>3bet%</th>
+        <th>收池率%</th> <!-- 新增欄位 -->
       </tr>
     </thead>
     <tbody id="recordTable"></tbody>
@@ -60,28 +63,35 @@
     let numerator = 0;
     let denominator = 0;
     let threeBetCount = 0;
+    let stealNum = 0;
+    let stealDen = 0;
     let handCount = 0;
 
     function updateVPIP() {
       let vpip = denominator > 0 ? (numerator / denominator) * 100 : 0;
-      document.getElementById("vpip").innerText = `VVIP="${vpip.toFixed(1)}%"`;
+      document.getElementById("vpip").innerText = `VPIP="${vpip.toFixed(1)}%"`;
 
       if (vpip > 50) {
-        document.getElementById("callBtn").style.backgroundColor = "red";
-        document.getElementById("callBtn").style.color = "white";
-        document.getElementById("bet3Btn").style.backgroundColor = "red";
-        document.getElementById("bet3Btn").style.color = "white";
+        document.querySelector("button[onclick='call()']").style.backgroundColor = "red";
+        document.querySelector("button[onclick='call()']").style.color = "white";
+        document.querySelector("button[onclick='bet3()']").style.backgroundColor = "red";
+        document.querySelector("button[onclick='bet3()']").style.color = "white";
       } else {
-        document.getElementById("callBtn").style.backgroundColor = "white";
-        document.getElementById("callBtn").style.color = "black";
-        document.getElementById("bet3Btn").style.backgroundColor = "white";
-        document.getElementById("bet3Btn").style.color = "black";
+        document.querySelector("button[onclick='call()']").style.backgroundColor = "white";
+        document.querySelector("button[onclick='call()']").style.color = "black";
+        document.querySelector("button[onclick='bet3()']").style.backgroundColor = "white";
+        document.querySelector("button[onclick='bet3()']").style.color = "black";
       }
     }
 
     function update3Bet() {
       let rate = denominator > 0 ? (threeBetCount / denominator) * 100 : 0;
       document.getElementById("threeBet").innerText = `3bet="${rate.toFixed(1)}%"`;
+    }
+
+    function updateSteal() {
+      let stealRate = stealDen > 0 ? (stealNum / stealDen) * 100 : 0;
+      document.getElementById("stealRate").innerText = `收池率="${stealRate.toFixed(1)}%"`;
     }
 
     function updateHand() {
@@ -93,42 +103,60 @@
       handCount++;
       updateVPIP();
       update3Bet();
+      updateSteal();
       updateHand();
     }
 
     function call() {
       numerator++;
       denominator++;
+      stealDen++;
       handCount++;
       updateVPIP();
       update3Bet();
+      updateSteal();
       updateHand();
     }
 
     function bet3() {
       threeBetCount++;
+      stealDen++;
       handCount++;
       updateVPIP();
       update3Bet();
+      updateSteal();
+      updateHand();
+    }
+
+    function steal() {
+      stealNum++;
+      stealDen++;
+      handCount++;
+      updateSteal();
       updateHand();
     }
 
     function saveAndReset() {
       let vpip = denominator > 0 ? (numerator / denominator) * 100 : 0;
       let rate = denominator > 0 ? (threeBetCount / denominator) * 100 : 0;
+      let stealRate = stealDen > 0 ? (stealNum / stealDen) * 100 : 0;
 
       let table = document.getElementById("recordTable");
       let row = table.insertRow();
       row.insertCell(0).innerText = handCount;
       row.insertCell(1).innerText = `${vpip.toFixed(1)}%`;
       row.insertCell(2).innerText = `${rate.toFixed(1)}%`;
+      row.insertCell(3).innerText = `${stealRate.toFixed(1)}%`;
 
       numerator = 0;
       denominator = 0;
       threeBetCount = 0;
+      stealNum = 0;
+      stealDen = 0;
       handCount = 0;
       updateVPIP();
       update3Bet();
+      updateSteal();
       updateHand();
     }
 
@@ -136,9 +164,12 @@
       numerator = 0;
       denominator = 0;
       threeBetCount = 0;
+      stealNum = 0;
+      stealDen = 0;
       handCount = 0;
       updateVPIP();
       update3Bet();
+      updateSteal();
       updateHand();
       document.getElementById("recordTable").innerHTML = "";
     }
