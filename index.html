@@ -71,16 +71,18 @@
       let vpip = denominator > 0 ? (numerator / denominator) * 100 : 0;
       document.getElementById("vpip").innerText = `VPIP="${vpip.toFixed(1)}%"`;
 
+      const callBtn = document.querySelector("button[onclick='call()']");
+      const bet3Btn = document.querySelector("button[onclick='bet3()']");
       if (vpip > 50) {
-        document.querySelector("button[onclick='call()']").style.backgroundColor = "red";
-        document.querySelector("button[onclick='call()']").style.color = "white";
-        document.querySelector("button[onclick='bet3()']").style.backgroundColor = "red";
-        document.querySelector("button[onclick='bet3()']").style.color = "white";
+        callBtn.style.backgroundColor = "red";
+        callBtn.style.color = "white";
+        bet3Btn.style.backgroundColor = "red";
+        bet3Btn.style.color = "white";
       } else {
-        document.querySelector("button[onclick='call()']").style.backgroundColor = "white";
-        document.querySelector("button[onclick='call()']").style.color = "black";
-        document.querySelector("button[onclick='bet3()']").style.backgroundColor = "white";
-        document.querySelector("button[onclick='bet3()']").style.color = "black";
+        callBtn.style.backgroundColor = "white";
+        callBtn.style.color = "black";
+        bet3Btn.style.backgroundColor = "white";
+        bet3Btn.style.color = "black";
       }
     }
 
@@ -119,7 +121,9 @@
     }
 
     function bet3() {
+      numerator++;
       threeBetCount++;
+      denominator++;
       stealDen++;
       handCount++;
       updateVPIP();
