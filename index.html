@@ -36,14 +36,14 @@
     <button onclick="fold()">棄牌</button>
     <button onclick="call()">入池</button>
     <button onclick="bet3()">3bet</button>
-    <button onclick="steal()">收池</button> <!-- 新增收池按鈕 -->
+    <button onclick="steal()">收池</button>
     <button onclick="saveAndReset()">儲存</button>
     <button onclick="deleteAll()">刪除</button>
   </div>
 
   <div class="result" id="vpip">VPIP="0.0%"</div>
   <div class="result" id="threeBet">3bet="0.0%"</div>
-  <div class="result" id="stealRate">收池率="0.0%"</div> <!-- 新增收池率 -->
+  <div class="result" id="stealRate">收池率="0.0%"</div>
   <div class="result" id="handCountDisplay">第 0 手</div>
 
   <h3>儲存紀錄</h3>
@@ -53,7 +53,7 @@
         <th>手數</th>
         <th>VPIP%</th>
         <th>3bet%</th>
-        <th>收池率%</th> <!-- 新增欄位 -->
+        <th>收池率%</th>
       </tr>
     </thead>
     <tbody id="recordTable"></tbody>
@@ -133,10 +133,9 @@
     }
 
     function steal() {
-      stealNum++;  // 分子加 1
-      // 不增加 stealDen，即分母不變
+      stealNum++;
       updateSteal();
-      updateHand();  // 不增加手數
+      updateHand();
     }
 
     function saveAndReset() {
