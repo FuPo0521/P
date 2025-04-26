@@ -67,10 +67,63 @@
     let stealDen = 0;
     let handCount = 0;
 
+    function saveData() {
+      const data = { numerator, denominator, threeBetCount, stealNum, stealDen, handCount, records: getTableData() };
+      localStorage.setItem('pokerData', JSON.stringify(data));
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem('pokerData');
+      if (saved) {
+        const data = JSON.parse(saved);
+        numerator = data.numerator;
+        denominator = data.denominator;
+        threeBetCount = data.threeBetCount;
+        stealNum = data.stealNum;
+        stealDen = data.stealDen;
+        handCount = data.handCount;
+        updateAll();
+        restoreTableData(data.records);
+      }
+    }
+
+    function getTableData() {
+      const rows = document.querySelectorAll('#recordTable tr');
+      const records = [];
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        records.push({
+          hand: cells[0].innerText,
+          vpip: cells[1].innerText,
+          threeBet: cells[2].innerText,
+          stealRate: cells[3].innerText
+        });
+      });
+      return records;
+    }
+
+    function restoreTableData(records) {
+      const table = document.getElementById('recordTable');
+      table.innerHTML = '';
+      records.forEach(record => {
+        const row = table.insertRow();
+        row.insertCell(0).innerText = record.hand;
+        row.insertCell(1).innerText = record.vpip;
+        row.insertCell(2).innerText = record.threeBet;
+        row.insertCell(3).innerText = record.stealRate;
+      });
+    }
+
+    function updateAll() {
+      updateVPIP();
+      update3Bet();
+      updateSteal();
+      updateHand();
+    }
+
     function updateVPIP() {
       let vpip = denominator > 0 ? (numerator / denominator) * 100 : 0;
       document.getElementById("vpip").innerText = `VPIP="${vpip.toFixed(1)}%"`;
-
       const callBtn = document.querySelector("button[onclick='call()']");
       const bet3Btn = document.querySelector("button[onclick='bet3()']");
       if (vpip > 50) {
@@ -103,10 +156,8 @@
     function fold() {
       denominator++;
       handCount++;
-      updateVPIP();
-      update3Bet();
-      updateSteal();
-      updateHand();
+      updateAll();
+      saveData();
     }
 
     function call() {
@@ -114,10 +165,8 @@
       denominator++;
       stealDen++;
       handCount++;
-      updateVPIP();
-      update3Bet();
-      updateSteal();
-      updateHand();
+      updateAll();
+      saveData();
     }
 
     function bet3() {
@@ -126,25 +175,22 @@
       denominator++;
       stealDen++;
       handCount++;
-      updateVPIP();
-      update3Bet();
-      updateSteal();
-      updateHand();
+      updateAll();
+      saveData();
     }
 
     function steal() {
       stealNum++;
       updateSteal();
-      updateHand();
+      saveData();
     }
 
     function saveAndReset() {
       let vpip = denominator > 0 ? (numerator / denominator) * 100 : 0;
       let rate = denominator > 0 ? (threeBetCount / denominator) * 100 : 0;
       let stealRate = stealDen > 0 ? (stealNum / stealDen) * 100 : 0;
-
-      let table = document.getElementById("recordTable");
-      let row = table.insertRow();
+      const table = document.getElementById("recordTable");
+      const row = table.insertRow();
       row.insertCell(0).innerText = handCount;
       row.insertCell(1).innerText = `${vpip.toFixed(1)}%`;
       row.insertCell(2).innerText = `${rate.toFixed(1)}%`;
@@ -156,10 +202,8 @@
       stealNum = 0;
       stealDen = 0;
       handCount = 0;
-      updateVPIP();
-      update3Bet();
-      updateSteal();
-      updateHand();
+      updateAll();
+      saveData();
     }
 
     function deleteAll() {
@@ -169,12 +213,12 @@
       stealNum = 0;
       stealDen = 0;
       handCount = 0;
-      updateVPIP();
-      update3Bet();
-      updateSteal();
-      updateHand();
-      document.getElementById("recordTable").innerHTML = "";
+      document.getElementById("recordTable").innerHTML = '';
+      updateAll();
+      saveData();
     }
+
+    window.onload = loadData;
   </script>
 
 </body>
